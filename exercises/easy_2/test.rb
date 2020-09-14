@@ -1,9 +1,2 @@
-puts "What is your name?"
-name = gets.chomp
-
-if name.end_with?('!')
-  name.delete_suffix!('!')
-  puts "HELLO #{name.upcase}. WHY ARE YOU SCREAMING?"
-else
-  puts "Hello #{name}."
-end
+n = 4
+puts (1..n).inject { |sum, num| sum * num } 
