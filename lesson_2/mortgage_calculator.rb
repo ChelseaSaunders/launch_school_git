@@ -1,3 +1,6 @@
+require 'yaml'
+MESSAGES = YAML.load_file('calculator_messages.yml')
+
 def prompt(message)
   puts("=> #{message}")
 end
@@ -21,19 +24,19 @@ def get_amounts
     if number?(amount)
       break
     else
-      prompt("Oops! Amount must be a positive number. Please try again.")
+      prompt(MESSAGES['invalid_input'])
     end
   end
   amount
 end
 
-prompt("Welcome to the mortgage calculator!")
+prompt(MESSAGES['welcome'])
 
 loop do
-  prompt('Please enter the loan amount:')
+  prompt(MESSAGES['loan_amount_prompt'])
   loan_amount = get_amounts
 
-  prompt('Please enter the Annual Percentage Rate (APR):')
+  prompt(MESSAGES['apr_prompt'])
   apr = get_amounts
 
   monthly_interest = (apr.to_f / 12) / 100
@@ -42,21 +45,27 @@ loop do
   months = ''
 
   loop do
-    prompt('Please enter the loan duration:')
-    prompt('Years:')
+    prompt(MESSAGES['loan_duration_prompt'])
+    prompt(MESSAGES['years_prompt'])
     years = get_amounts
 
-    prompt('Months:')
+    prompt(MESSAGES['months_prompt'])
     months = get_amounts
 
     months = (years.to_i * 12) + months.to_i
 
     prompt("Is the total loan duration #{months} months? (Y for yes)")
+
+    # Per some discussion in the forum around trying to do string interpolation
+    # with yaml being a bit more complex than necessary at our current learning
+    # stage, I decided to skip the yaml for the two strings that use
+    # interpolation in this assignment.
+
     answer = gets.chomp.downcase
     if answer == 'y'
       break
     else
-      prompt("Oops! Let's try again!")
+      prompt(MESSAGES['incorrect_duration_prompt'])
     end
   end
 
@@ -65,10 +74,10 @@ loop do
 
   prompt("Your monthly payment is $#{monthly_payment.round(2)}.")
 
-# I just used the Float.round method because I can't seem to understand the
-# Kernel.format method yet. I'm trying to get my head around it, though!
+  # I just used the Float.round method because I can't seem to understand the
+  # Kernel.format method yet. I'm trying to get my head around it, though!
 
-  prompt("Would you like to do another calculation? (Y for yes)")
-  answer = gets.chomp
+  prompt(MESSAGES['another_calculation'])
+  answer = gets.chomp.downcase
   break if answer != 'y'
 end
