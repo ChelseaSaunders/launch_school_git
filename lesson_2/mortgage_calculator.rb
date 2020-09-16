@@ -130,7 +130,7 @@ loop do
 
   apr = get_apr_amount
 
-  monthly_interest = (apr.to_f / 12) / 100
+  monthly_interest = apr_mpr(apr)
 
   years = ''
   months = ''
