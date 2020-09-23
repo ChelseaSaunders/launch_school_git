@@ -1,3 +1,11 @@
+require 'yaml'
+MESSAGES = YAML.load_file('rock_paper_scissors_messages.yml')
+
+# Per the comment in the forum, I did not use YAML files for strings that are
+# interpolated.
+
+# VARIABLE ASSIGNMENTS:
+
 VALID_CHOICES = { 'r' => 'rock',
                   'p' => 'paper',
                   'sc' => 'scissors',
@@ -21,33 +29,52 @@ counter = { player_score: 0,
 
 MAX = 5
 
+# METHODS:
+
 def prompt(message)
   puts("=> #{message}")
 end
 
 def display_hello
-  prompt("Welcome to Rock, Paper, Scissors!")
+  prompt(MESSAGES['welcome'])
+end
+
+def retrieve_user_move
+  user_choice = ''
+  loop do
+    prompt(MESSAGES['user_choice_prompt'])
+    VALID_CHOICES.each { |k, v| puts "Type '#{k}' for #{v}" }
+    user_choice = gets.chomp.downcase
+    break if VALID_CHOICES.include?(user_choice)
+    prompt(MESSAGES['invalid_input'])
+  end
+  user_choice = VALID_CHOICES[user_choice]
+end
+
+def retrieve_computer_move(array)
+  array.sample
 end
 
 def win?(hash, winner, loser)
   hash[winner].include?(loser)
 end
 
-def game_counter(hash, key)
-  hash[key] += 1
+def line_break
+  puts ""
 end
 
 def display_choices(choice1, choice2)
-  prompt("You chose: #{choice1}; computer chose: #{choice2}")
+  prompt("You chose: #{choice1}")
+  prompt("Computer chose: #{choice2}")
 end
 
 def display_results(winning, player, computer)
   if win?(winning, player, computer)
-    prompt("You won!")
+    prompt(MESSAGES['player_won'])
   elsif win?(winning, computer, player)
-    prompt("Computer won!")
+    prompt(MESSAGES['computer_won'])
   else
-    prompt("It's a tie!")
+    prompt(MESSAGES['tie'])
   end
 end
 
@@ -59,31 +86,32 @@ def total_results(winning, player, computer, hash)
   else
     hash[:ties] += 1
   end
+  hash[:total_games] += 1
 end
 
 def display_current_scores(score)
-  prompt("You have won #{score[:player_score]} game(s).")
-  prompt("The computer has won #{score[:computer_score]} game(s).")
+  prompt("#{score[:total_games]} games played.")
+  prompt("You won #{score[:player_score]} game(s).")
+  prompt("The computer won #{score[:computer_score]} game(s).")
   prompt("You have tied #{score[:ties]} time(s).")
 end
 
-def five_games_exit(key)
-  if key < MAX
-    prompt("You have played #{key} game(s) and have #{MAX - key} game(s) left.")
-  elsif key == MAX
-    prompt("You played all 5 games!")
+def five_games_exit(player_win, computer_win)
+  if player_win == MAX
+    prompt(MESSAGES['player_grand_winner'])
+  elsif computer_win == MAX
+    prompt(MESSAGES['computer_grand_winner'])
   end
 end
 
 def tournament_over?(hash)
-  true if hash[:total_games] == MAX
+  true if hash[:computer_score] == MAX || hash[:player_score] == MAX
 end
 
 def another_game
-  prompt("Do you want to play again?")
   start_over = ''
   loop do
-    prompt("Type 'y' or 'yes' to play again, or 'n' or 'no' to exit.)")
+    prompt(MESSAGES['another_game_prompt'])
     answer = gets.chomp.downcase
     if answer.downcase == 'y' || answer.downcase == 'yes'
       start_over = true
@@ -92,7 +120,7 @@ def another_game
       start_over = false
       break
     else
-      prompt("Oops! Invalid input." )
+      prompt(MESSAGES['invalid_input'])
     end
   end
   start_over
@@ -103,48 +131,47 @@ def play_again?(again)
 end
 
 def display_goodbye
-  prompt("Thank you for playing. Goodbye!")
+  prompt(MESSAGES['goodbye'])
 end
 
-choice = ''
+def clear_screen
+  system 'clear'
+end
+
+# BEGIN PROGRAM
 
 display_hello
 
 loop do
-  loop do
-    prompt("Choose one:")
-    VALID_CHOICES.each { |k, v| puts "Type #{k} for #{v}" }
-    choice_abrev = gets.chomp.downcase
+  choice = retrieve_user_move
 
-    if VALID_CHOICES.include?(choice_abrev)
-      choice = VALID_CHOICES[choice_abrev]
-      break
-    else
-      prompt("That's not a valid choice.")
-    end
-  end
+  clear_screen
 
-  system "clear"
-
-  computer_choice = computer_choice_list.sample
+  computer_choice = retrieve_computer_move(computer_choice_list)
 
   display_choices(choice, computer_choice)
 
+  line_break
+
   display_results(winning, choice, computer_choice)
+
+  line_break
 
   total_results(winning, choice, computer_choice, counter)
 
   display_current_scores(counter)
 
-  game_counter(counter, :total_games)
+  line_break
 
-  five_games_exit(counter[:total_games])
+  five_games_exit(counter[:player_score], counter[:computer_score])
 
   break if tournament_over?(counter)
 
   break unless play_again?(another_game)
 
-  system "clear"
+  clear_screen
 end
+
+line_break
 
 display_goodbye
