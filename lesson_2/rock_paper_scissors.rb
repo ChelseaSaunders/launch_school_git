@@ -19,8 +19,14 @@ counter = { player_score: 0,
             ties: 0,
             total_games: 0 }
 
+MAX = 5
+
 def prompt(message)
   puts("=> #{message}")
+end
+
+def display_hello
+  prompt("Welcome to Rock, Paper, Scissors!")
 end
 
 def win?(hash, winner, loser)
@@ -29,6 +35,10 @@ end
 
 def game_counter(hash, key)
   hash[key] += 1
+end
+
+def display_choices(choice1, choice2)
+  prompt("You chose: #{choice1}; computer chose: #{choice2}")
 end
 
 def display_results(winning, player, computer)
@@ -51,15 +61,54 @@ def total_results(winning, player, computer, hash)
   end
 end
 
+def display_current_scores(score)
+  prompt("You have won #{score[:player_score]} game(s).")
+  prompt("The computer has won #{score[:computer_score]} game(s).")
+  prompt("You have tied #{score[:ties]} time(s).")
+end
+
 def five_games_exit(key)
-  if key < 5
-    prompt("You have played #{key} game(s) and have #{5 - key} game(s) left.")
-  elsif key == 5
+  if key < MAX
+    prompt("You have played #{key} game(s) and have #{MAX - key} game(s) left.")
+  elsif key == MAX
     prompt("You played all 5 games!")
   end
 end
 
+def tournament_over?(hash)
+  true if hash[:total_games] == MAX
+end
+
+def another_game
+  prompt("Do you want to play again?")
+  start_over = ''
+  loop do
+    prompt("Type 'y' or 'yes' to play again, or 'n' or 'no' to exit.)")
+    answer = gets.chomp.downcase
+    if answer.downcase == 'y' || answer.downcase == 'yes'
+      start_over = true
+      break
+    elsif answer.downcase == 'n' || answer.downcase == 'no'
+      start_over = false
+      break
+    else
+      prompt("Oops! Invalid input." )
+    end
+  end
+  start_over
+end
+
+def play_again?(again)
+  again == true
+end
+
+def display_goodbye
+  prompt("Thank you for playing. Goodbye!")
+end
+
 choice = ''
+
+display_hello
 
 loop do
   loop do
@@ -75,27 +124,27 @@ loop do
     end
   end
 
+  system "clear"
+
   computer_choice = computer_choice_list.sample
 
-  prompt("You chose: #{choice}; computer chose: #{computer_choice}")
+  display_choices(choice, computer_choice)
 
   display_results(winning, choice, computer_choice)
 
   total_results(winning, choice, computer_choice, counter)
 
-  prompt("You have won #{counter[:player_score]} game(s).")
-  prompt("The computer has won #{counter[:computer_score]} game(s).")
-  prompt("You have tied #{counter[:ties]} time(s).")
+  display_current_scores(counter)
 
   game_counter(counter, :total_games)
 
   five_games_exit(counter[:total_games])
 
-  break if counter[:total_games] == 5
+  break if tournament_over?(counter)
 
-  prompt("Do you want to play again? (Type 'y' or yes' to play again)")
-  answer = gets.chomp
-  break unless answer.downcase == 'yes' || answer.downcase == 'y'
+  break unless play_again?(another_game)
+
+  system "clear"
 end
 
-prompt("Thank you for playing. Goodbye!")
+display_goodbye
