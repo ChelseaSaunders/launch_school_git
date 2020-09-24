@@ -25,60 +25,33 @@ def positive_integer?(num)
   integer?(num) && positive_number?(num)
 end
 
-def get_loan_amount
-  prompt(MESSAGES['loan_amount_prompt'])
-  amount = ''
-  loop do
-    amount = gets.chomp
-    if positive_number?(amount)
-      break
-    else
-      prompt(MESSAGES['invalid_input_loan'])
-    end
+def valid_input?(data_type, data)
+  case data_type
+  when 'loan'
+    positive_number?(data)
+  when 'apr'
+    positive_number?(data) || zero?(data)
+  when 'year'
+    positive_integer?(data) || zero?(data)
   end
-  amount
 end
 
-def get_apr_amount
-  prompt(MESSAGES['apr_prompt'])
-  amount = ''
+def get_amount(input_type, error_message_type)
+  prompt(MESSAGES[input_type])
+  input = ''
   loop do
-    amount = gets.chomp
-    if positive_number?(amount) || zero?(amount)
+    input = gets.chomp
+    if valid_input?(input_type, input)
       break
     else
-      prompt(MESSAGES['invalid_input_apr'])
+      prompt(MESSAGES[error_message_type])
     end
   end
-  amount
-end
-
-def apr_mpr(num)
-  mpr = ''
-  if num.to_f == 0
-    mpr = 0
-  else
-    mpr = (num.to_f / 12) / 100
-  end
-  mpr
-end
-
-def get_year_amount
-  prompt(MESSAGES['years_prompt'])
-  amount = ''
-  loop do
-    amount = gets.chomp
-    if positive_integer?(amount) || zero?(amount)
-      break
-    else
-      prompt(MESSAGES['invalid_input_years'])
-    end
-  end
-  amount
+  input
 end
 
 def get_month_amount
-  prompt(MESSAGES['months_prompt'])
+  prompt(MESSAGES['months'])
   amount = ''
   loop do
     amount = gets.chomp
@@ -93,6 +66,37 @@ def get_month_amount
     end
   end
   amount
+end
+
+def apr_to_mpr(num)
+  mpr = ''
+  if num.to_f == 0
+    mpr = 0
+  else
+    mpr = (num.to_f / 12) / 100
+  end
+  mpr
+end
+
+def loan_duration
+  month_total = ''
+  loop do
+    prompt(MESSAGES['loan_duration_prompt'])
+    years = get_amount('year', 'invalid_input_year')
+    month_total = get_month_amount
+
+    month_total = (years.to_i * 12) + month_total.to_i
+
+    prompt("Is the total loan duration #{month_total} months? (Y for yes)")
+
+    answer = gets.chomp.downcase
+    if answer == 'y'
+      break
+    else
+      prompt(MESSAGES['incorrect_duration_prompt'])
+    end
+  end
+  month_total
 end
 
 def calculate_payment(loan, interest, months)
@@ -123,34 +127,18 @@ def another_calculation
   start_over
 end
 
+# BEGIN PROGRAM:
+
 prompt(MESSAGES['welcome'])
 
 loop do
-  loan_amount = get_loan_amount
+  loan_amount = get_amount('loan', 'invalid_input_loan')
 
-  apr = get_apr_amount
+  apr = get_amount('apr', 'invalid_input_apr')
 
-  monthly_interest = apr_mpr(apr)
+  monthly_interest = apr_to_mpr(apr)
 
-  years = ''
-  months = ''
-
-  loop do
-    prompt(MESSAGES['loan_duration_prompt'])
-    years = get_year_amount
-    months = get_month_amount
-
-    months = (years.to_i * 12) + months.to_i
-
-    prompt("Is the total loan duration #{months} months? (Y for yes)")
-
-    answer = gets.chomp.downcase
-    if answer == 'y'
-      break
-    else
-      prompt(MESSAGES['incorrect_duration_prompt'])
-    end
-  end
+  months = loan_duration
 
   monthly_payment = calculate_payment(loan_amount, monthly_interest, months)
 
