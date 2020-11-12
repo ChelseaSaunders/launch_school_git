@@ -19,63 +19,40 @@
 # - output: integers
 # - rules:
 #   - explicit: convert integers in string into actual integers, do not use pre-
-#     existing methods.
+#     existing methods. Assume all input are strings of integers.
 #   - implicit:
 
 # EXAMPLES:
 # Provided:
 # string_to_integer('4321') == 4321
 # string_to_integer('570') == 570
+# The problem explicitly assumes only valid input, these test cases should be
+# adequate; the only outlier not include is '0', so I will add that to the test.
 
 # DATA:
-# Convert string into array, convert array back to string after transforming
-# characters.
+# Convert string into array. Convert array elements using a hash, which has
+# numeral characters as keys and their corresponding integers as values.
+# Convert array of individual single-digit integers into single integer that
+# corresponds to input string representation.
 
 # Alogorithm:
 # Convert the string to an array with each character as an element; iterate
-# thruogh the array to replace each string character with an integer, iterate
-# thruogh the transformed array with a method that converts each digit into its
-# respective multiple of 10 (435 would be 400, 30, and 5, for example), and adds
-# them together.
+# thruogh the array to replace each string character with an integer using the
+# key/value pairs in the hash, iterate thruogh the transformed array with a
+# method that converts each digit into its respective multiple of 10 (435 would
+# be 400, 30, and 5, for example), and adds them together.
+
+NUMBERS_CONVERSION = { '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4,
+                       '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9 }
 
 def string_to_integer(string_of_integers)
-  array = string_of_integers.chars
-
-  array.map! do |num|
-    case num
-    when '0'
-      num = 0
-    when '1'
-      num = 1
-    when '2'
-      num = 2
-    when '3'
-      num = 3
-    when '4'
-      num = 4
-    when '5'
-      num = 5
-    when '6'
-      num = 6
-    when '7'
-      num = 7
-    when '8'
-      num = 8
-    else
-     num = 9
-    end
-  end
+  array = string_of_integers.chars.map! { |num| NUMBERS_CONVERSION[num] }
 
   total = 0
-  counter = 1
-
-  array.length.times do
-    number = array.pop * counter
-    total = total + number
-    counter *= 10
-  end
+  array.each { |digit| total = 10 * total + digit }
   total
 end
 
 p string_to_integer('4321') == 4321
 p string_to_integer('570') == 570
+p string_to_integer('0') == 0

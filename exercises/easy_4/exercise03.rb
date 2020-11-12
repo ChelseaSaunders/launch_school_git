@@ -1,5 +1,3 @@
-# Problem:
-
 # In the modern era under the Gregorian Calendar, leap years occur in every
 # year that is evenly divisible by 4, unless the year is also divisible by 100.
 # If the year is evenly divisible by 100, then it is not a leap year unless the
@@ -9,7 +7,17 @@
 # that takes any year greater than 0 as input, and returns true if the year is
 # a leap year, or false if it is not a leap year.
 
-# Examples/test cases:
+# PROBLEM:
+#   Input: integer
+#   Output: true or false
+#   Rules:
+#     Explicit: Test must determine whether input integer is divisible by 4,
+#       but not by 100, with no remainders, and return true for those cases,
+#       false for all other cases.
+#       Input will be an integer greater than zero
+#       Must return true or false
+
+# EXAMPLES/TEST CASES:
 # Given the context of the program, I think I can assume valid input (positive
 # integers), but if not I would want to account for invalid input.
 
@@ -19,7 +27,7 @@
 # of.
 
 # Data structure:
-# The input is an integer and the output is an integer. The operations
+# The input is an integer and the output is true or false. The operations
 # necessary to determine the result are % and != and ==, all accessible to
 # integers so there is no reason to convert the integer into another data type.
 
