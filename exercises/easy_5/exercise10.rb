@@ -27,7 +27,6 @@ end
 
 print_in_box('oh hi mark')
 
-
 # Further Exploration
 # Modify this method so it will truncate the message if it will be too wide to
 # fit inside a standard terminal window (80 columns, including the sides of the
@@ -87,7 +86,7 @@ def print_in_box_extra_lines(string)
   puts dashes
   puts spaces
   counter = 0
-  array.length.times do |text|
+  array.length.times do
     puts "| #{array[counter]} |"
     counter += 1
   end

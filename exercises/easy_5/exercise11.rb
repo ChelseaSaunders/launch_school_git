@@ -3,17 +3,14 @@
 # reversed. Given the method's implementation, will the returned string be the
 # same object as the one passed in as an argument or a different object?
 
-# PROBLEM:
-#   Input:
-#   Output:
-#   Rules:
-#     Explicit:
-#     Implicit:
+def spin_me(str)
+  p str.object_id
+  str.split.each do |word|
+    word.reverse!
+  end.join(" ")
+end
 
-# EXAMPLES/TEST CASES:
+p spin_me("hello world").object_id # "olleh dlrow"
 
-# DATA:
-
-# ALOGORITHM:
-
-# CODE:
+# The inital input and output have different object id's so the method returns
+# a different object.
