@@ -1,102 +1,78 @@
-# You have a bank of switches before you, numbered from 1 to n. Each switch is
-# connected to exactly one light that is initially off. You walk down the row
-# of switches and toggle every one of them. You go back to the beginning, and
-# on this second pass, you toggle switches 2, 4, 6, and so on. On the third
-# pass, you go back again to the beginning and toggle switches 3, 6, 9, and so
-# on. You repeat this process and keep going until you have been through n
-# repetitions.
+# Given a string of words separated by spaces, write a method that takes this
+# string of words and returns a string in which the first and last letters of
+# every word are swapped.
 
-# Write a method that takes one argument, the total number of switches, and
-# returns an Array that identifies which lights are on after n repetitions.
-
-# Example with n = 5 lights:
-
-# round 1: every light is turned on
-# round 2: lights 2 and 4 are now off; 1, 3, 5 are on
-# round 3: lights 2, 3, and 4 are now off; 1 and 5 are on
-# round 4: lights 2 and 3 are now off; 1, 4, and 5 are on
-# round 5: lights 2, 3, and 5 are now off; 1 and 4 are on
-# The result is that 2 lights are left on, lights 1 and 4. The return value is
-# [1, 4].
-
-# With 10 lights, 3 lights are left on: lights 1, 4, and 9. The return value is
-# [1, 4, 9].
+# You may assume that every word contains at least one letter, and that the
+# string will always contain at least one word. You may also assume that each
+# string contains nothing but words and spaces.
 
 # PROBLEM:
-#   Input: Positive integer
-#   Output: Array
+#   Input: String of words separated by spaces
+#   Output: String of words separated by spaces
 #   Rules:
 #     Explicit:
-#       - Total number of lights = input number
-#       - Lights are initially all off
-#       - Must pass through lights the number of input times
-#       - Each pass through is going incrimentally through the switches; the
-#         incriment = the number of the iteration (first = every 1 switch,
-#         second = every 2 switches, thirs = every 3 switches, etc.)
-#       - Each time a switch is part of the iteration it is toggled to the
-#         opposite position.
-#       - The final array should return only the switches that were in the "on"
-#         position in the final pass through.
-
+#       - Must alter string such that the order of each set of characters is
+#         intact, but each set of charachters within the larger string is
+#         reversed.
 #     Implicit:
-#       - Lights can only be set to off or on
+#       - Case sensitive, based on example/test cases provided
+#       - Not clear whether return value should be permenantly altered input
+#         value or new value; for the context of this problem I will do what is
+#         easiest
 
 # EXAMPLES/TEST CASES:
-# Provided:
-# lights_on(5) == [1, 4]
-# lights_on(10) == [1, 4, 9]
+# Provided; they include multi-word, single-word, and single-character strings,
+# which I believe cover all of the edge cases. Given the context of the exercise
+# I don't believe we have to validate that input is string.
 
 # DATA:
+#   The input and output are both strings, but the array class provides the
+#   easiest way to sort individual sub-strings separated by spaces, so I will
+#   use an array as well.
 
 # ALOGORITHM:
-# Create method called lights_on that takes one integer as an argument.
-# Create an hash called lights that and create one key for each number in the
-# range 1..input integer.  Set all of the values to off.
-# Set a
+#   I will cteate a method, swap, that takes one string as an argument.
+#   I will create an array and assign it the value of the string, with each
+#   word as an element.
+#
+#   Outside and above the swap method, I will create a method, swap_characters
+#   which takes one array as an argument.
+#   In this method, I will iterate thruogh the array, and break each element
+#   into a sub-array of individual characters
+#   I will create two variables, first_char and last_char and assign them to
+#   the first and last character in each original array element (so they will)
+#   stay fixed even as I mutate the sub-arrays.
+#   I will then assign the last_char variable to the first element of the
+#   subarray, and the first_char variable to the first element in hte subarray.
+#   I will then rejoin the subarray so that at the conclusion of iterating
+#   through the original array, it retutns an array of strings with the first
+#   and last characters reversed.
+#
+#   Back in the swap method, I will call the swap_characters method on the new
+#   array.
+#   I will then join the modified array with spaces between each element, and
+#   return it.
 
 # CODE:
 
-def create_hash_with_value_off(hash, number)
-  count = 1
-  number.times do
-    hash[count] = 'off'
-    count += 1
+def swap_charachters(array)
+  array.map! do |word|
+    chars = word.split('')
+    last_char = word[-1]
+    first_char = word[0]
+    chars[0] = last_char
+    chars[-1] = first_char
+    chars.join
   end
+  array
 end
 
-def toggle_lights(hsh, num)
-  step_counter = 1
-
-  num.times do
-    step_counter.step(num, step_counter) do |step|
-      if hsh[step] == 'on'
-        hsh[step] = 'off'
-      else
-        hsh[step] = 'on'
-      end
-    end
-
-    step_counter += 1
-  end
+def swap(string)
+  array_of_words = string.split(' ')
+  swap_charachters(array_of_words)
+  array_of_words.join(' ')
 end
 
-def create_lights_on_array(hs, array)
-  hs.each_pair { |key, value| array << key if value == 'on' }
-end
-
-def lights_on(integer)
-  lights = {}
-
-  create_hash_with_value_off(lights, integer)
-
-  toggle_lights(lights, integer)
-
-  lights_on_array = []
-
-  create_lights_on_array(lights, lights_on_array)
-
-  lights_on_array
-end
-
-p lights_on(5) == [1, 4]
-p lights_on(10) == [1, 4, 9]
+p swap('Oh what a wonderful day it is') == 'hO thaw a londerfuw yad ti si'
+p swap('Abcde') == 'ebcdA'
+p swap('a') == 'a'
