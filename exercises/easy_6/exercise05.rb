@@ -5,17 +5,35 @@
 # you wrote in the previous exercise.
 
 # PROBLEM:
-#   Input:
-#   Output:
+#   Input: Array
+#   Output: New array with same elements from original array but in reverse
+#           order
 #   Rules:
 #     Explicit:
+#     - Cannot use .reverse or .reverse!
+#     - Return array must be new object
+#     - Original/input array must not be modified
+#     - Return array must contain all of the same elements as input array but
+#       in reverse order
 #     Implicit:
 
 # EXAMPLES/TEST CASES:
+#   Provided. Include tests to determine whether return is new object and
+#   whether original object has been modified, in addition to determining that
+#   the contents of the returned array meets the problem rules.
 
 # DATA:
+#   The input is an array and the output is an array. The tools necessary to
+#   solve the problem are available in the array class so there is no need for
+#   additional classes.
 
 # ALOGORITHM:
+# - I will create method, reverse, that takes one array as an argument.
+# - I will create an empty array, reversed_array, and set a counter to -1.
+# - I will create a loop that executes as many times as the array is long and
+#   pushes the value of the original array with the counter index position into
+#   the reversed_array and then subtracts one from the counter value
+# - I will return the reversed_array
 
 # CODE:
 

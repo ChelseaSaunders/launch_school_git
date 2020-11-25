@@ -4,17 +4,31 @@
 # the duplicate value that is known to be in the array.
 
 # PROBLEM:
-#   Input:
-#   Output:
+#   Input: array with exactly one dupicate value it its collection of elements
+#   Output: the value that occurs twice
 #   Rules:
 #     Explicit:
 #     Implicit:
 
 # EXAMPLES/TEST CASES:
+#   Provided.  Given costraints I believe it is safe to assume valid input. Test
+#   samples provided only include arrays of integers so I will create a test
+#   case with an array of strings to ensure there is no integer-specific method
+#   at play in my solution
 
 # DATA:
+#   Input is integer, output is element from integer (could be any object that
+#   could be found in an array)
 
 # ALOGORITHM:
+# - I will create a method find_dup that takes one array as an argument
+# - I will sort the array (so that any duplicate values will be consecutive) and
+#   assign it to the value sorted_array
+# - I will create an empty variable unique
+# - I will iterate through the sorted_array using elements and indexes and
+#   assign the element value to the unique variable if the element value matches
+#   the subsequent value in the sorted array.
+# - I will return the unique value
 
 # CODE:
 
@@ -39,3 +53,5 @@ p find_dup([18,  9, 36, 96, 31, 19, 54, 75, 42, 15,
           85, 87, 51, 17, 66, 20, 28, 26,  2, 22,
           40, 23, 71, 62, 73, 32, 43, 24,  4, 56,
           7,  34, 57, 74, 45, 11, 88, 67,  5, 58]) == 73
+
+p find_dup(%w(a b a)) == 'a'
