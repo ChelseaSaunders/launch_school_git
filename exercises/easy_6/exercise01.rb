@@ -35,7 +35,6 @@ def dms(angle)
   degrees + "°" + minutes + "'" + seconds + DEGREE
 end
 
-
 p dms(30) # == %(30°00'00")
 p dms(76.73) # == %(76°43'48")
 p dms(254.6) # == %(254°36'00")
