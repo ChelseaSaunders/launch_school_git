@@ -56,7 +56,7 @@ def show_multiplicative_average(arr)
   total = multiplied(arr)
   result = average(arr, total)
 
-  puts "The result is %0.3f" % [result]
+  puts "The result is #{format('%.03f', result)}"
 end
 
 show_multiplicative_average([3, 5])                # => The result is 7.500
