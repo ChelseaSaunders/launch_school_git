@@ -8,7 +8,7 @@ WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
                 [[1, 5, 9], [3, 5, 7]]              # diag
 
-score = {player: 0, computer: 0, tie: 0}
+score = { player: 0, computer: 0, tie: 0 }
 
 MAX_WIN = 5
 
@@ -46,10 +46,22 @@ def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
 
+def joinor(arr, punctuation = ', ', conjunction = 'or')
+  if arr.length == 1
+    arr.join
+  elsif arr.length == 2
+    arr[-1] = arr[-1].to_s.prepend(conjunction, ' ')
+    arr.join(' ')
+  elsif arr.length >= 3
+    arr[-1] = arr[-1].to_s.prepend(conjunction, ' ')
+    arr.join(punctuation)
+  end
+end
+
 def player_places_piece!(brd)
   square = ''
   loop do
-    prompt "Choose a square #{empty_squares(brd).join(', ')}:"
+    prompt "Choose a square #{joinor(empty_squares(brd))}:"
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
     prompt "Sorry that's not a vaild choice."
@@ -89,7 +101,6 @@ def offensive_play(brd)
 end
 
 def defensive_play(brd)
- # binding.pry
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 2
       line.each do |position|
@@ -102,7 +113,6 @@ def defensive_play(brd)
 end
 
 def computer_places_piece!(brd)
- # binding.pry
   if offense?(brd)
     offensive_play(brd)
   elsif defense?(brd)
@@ -139,9 +149,19 @@ def assign_winner(brd, score_hsh)
     score_hsh[:player] += 1
   elsif detect_winner(brd) == 'Computer'
     score_hsh[:computer] += 1
-#  elsif board_full?(brd)
-#    score_hsh[:tie] += 1
+  elsif board_full?(brd) == true
+    score_hsh[:tie] += 1
   end
+end
+
+def declare_winner(brd, score_hsh)
+  if someone_won?(brd)
+    prompt "#{detect_winner(brd)} won!"
+  else
+    prompt "It's a tie!"
+  end
+
+  assign_winner(brd, score_hsh)
 end
 
 def display_win_tally(hash)
@@ -159,19 +179,30 @@ def display_game_champion(hash)
   puts "Computer is the champion!" if hash[:computer] == 5
 end
 
+def alternate_player(current_player)
+  if current_player == 'computer'
+    current_player = 'user'
+  elsif current_player == 'user'
+    current_player = 'computer'
+  end
+  current_player
+end
+
+def place_piece!(brd, current_player)
+  computer_places_piece!(brd) if current_player == 'computer'
+  player_places_piece!(brd) if current_player == 'user'
+end
+
 def play_again?
   answer = ''
   loop do
     prompt "Play again? (y or n)"
     answer = gets.chomp.downcase
-    if answer == "yes" || answer == 'y'
-      break
-    elsif answer == "no" || answer == 'n'
-      break
-    else
-      puts "Sorry, that wasn't a valid input."
-    end
+    break if answer == "yes" || answer == 'y'
+    break if answer == "no" || answer == 'n'
+    puts "Sorry, that wasn't a valid input."
   end
+
   true if answer == "yes" || answer == 'y'
 end
 
@@ -186,25 +217,18 @@ end
 loop do
   board = initialize_board
 
+  current_player = 'user'
+
   loop do
     display_board(board)
-
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
   display_board(board)
 
-  if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
-    assign_winner(board, score)
-  else
-    prompt "It's a tie!"
-    score[:tie] += 1
-  end
+  declare_winner(board, score)
 
   display_win_tally(score)
 
