@@ -64,7 +64,6 @@ def deal_cards(card_deck, player_hand, dealer_hand)
   dealer_hand << card_deck.pop
   player_hand << card_deck.pop
   dealer_hand << card_deck.pop
-  player_hand << card_deck.pop
 end
 
 def joinand(arr)
@@ -72,13 +71,10 @@ def joinand(arr)
   if arr.length == 1
     string = arr.join
   elsif arr.length == 2
-    string = ' and ' + arr.pop
-    first_numbers = arr.join
-    string = first_numbers + string
+    string = arr.first + ' and ' + arr.last
   elsif arr.length >= 3
-    string = ' and ' + arr.pop
-    first_numbers = arr.join(', ')
-    string = first_numbers + string
+    first = arr[0..-2]
+    string = first.join(', ') + ' and ' + arr.last
   end
 
   string
@@ -134,7 +130,6 @@ end
 
 def hit(player_hand, card_deck)
   player_hand << card_deck.pop
-  p player_hand
 end
 
 def busted?(hand_value)
@@ -169,14 +164,13 @@ loop do
   player = []
   dealer = []
   player_hand_value = nil
-  dealer_hand_value = nil
+#  dealer_hand_value = nil
 
   deal_cards(playing_deck, player, dealer)
 
   loop do
     player_hand_value = calculate_hand_value(player, full_deck_values)
     display_player_hand(player, player_hand_value)
-
     display_busted(player, player_hand_value) if busted?(player_hand_value)
     break if busted?(player_hand_value)
 
@@ -184,7 +178,6 @@ loop do
     break if answer == 'stay'
 
     hit(player, playing_deck)
-    player
   end
 
   break unless play_again?
