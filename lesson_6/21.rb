@@ -1,3 +1,5 @@
+require 'pry'
+
 # 1. Initialize deck
 
 # 2. Deal cards to player and dealer
@@ -33,7 +35,7 @@ end
 
 def assign_card_value(hash)
   hash.each_key do |key|
-    if (1..9).include?(key[0].to_i)
+    if (2..9).include?(key[0].to_i)
       hash[key] = key[0].to_i
     elsif key[0..2] == 'ace'
      hash[key] = [1, 11]
@@ -78,45 +80,115 @@ def joinand(arr)
     first_numbers = arr.join(', ')
     string = first_numbers + string
   end
+
   string
 end
 
-def hand_value(cards, deck_hash)
+def aces(current_hand_value, ace_card, deck_hash)
+  ace_value = nil
+  if current_hand_value > 10
+    ace_value = deck_hash[ace_card][0]
+  else
+    ace_value = deck_hash[ace_card][1]
+  end
+
+  ace_value
+end
+
+def calculate_hand_value(cards, deck)
   total = 0
-  cards.each { |card| total += deck_hash[card] }
+  cards.each { |card| total += deck[card] if card[0..2] != 'ace' }
+  cards.each { |card| total += aces(total, card, deck) if card[0..2] == 'ace' }
   total
 end
 
-def display_player_hand(player_hand)
-  # puts "Player has #{joinand(player_hand)} worth a total of #{hand_value(player_hand).to_s}."
+def display_player_hand(player_hand, value)
+  puts "Player has #{joinand(player_hand)} worth a total of #{value.to_s}."
+end
+
+def dealer_visible_total(dealer_hand)
+
 end
 
 def display_dealer_card(dealer_hand)
-
+  puts "Dealer has unknown card and #{joinand(dealer_visible_total(dealer_hand))} worth a total of "
 end
 
-def player_hit_or_stay(player_hand)
+def hit_or_stay
+  answer = nil
+  loop do
+    puts "Hit or stay?"
+    answer = gets.chomp
+    break if answer.downcase == "hit" || answer.downcase == "stay"
+    puts "Invalid answer, please choose 'hit' or 'stay'."
+  end
 
+  if answer == "stay"
+    puts "You chose to stay."
+  else
+    puts "You chose to hit."
+  end
+
+  answer
+end
+
+def hit(player_hand, card_deck)
+  player_hand << card_deck.pop
+  p player_hand
+end
+
+def busted?(hand_value)
+  true if hand_value > 21
+end
+
+def display_busted(player_hand, value)
+  puts "You busted! Computer wins!"
+end
+
+def play_again?
+  answer = ''
+  loop do
+    puts "Play again? (y or n)"
+    answer = gets.chomp.downcase
+    break if answer == "yes" || answer == 'y'
+    break if answer == "no" || answer == 'n'
+    puts "Sorry, that wasn't a valid input."
+  end
+
+  true if answer == "yes" || answer == 'y'
 end
 
 # MAIN CODE
 
-full_deck_values = initialize_master_deck_values(SUITS, FACE_CARD_STRINGS)
+loop do
 
-playing_deck = initialize_deck(full_deck_values)
+  full_deck_values = initialize_master_deck_values(SUITS, FACE_CARD_STRINGS)
 
-player = []
-dealer = []
+  playing_deck = initialize_deck(full_deck_values)
 
-deal_cards(playing_deck, player, dealer)
+  player = []
+  dealer = []
+  player_hand_value = nil
+  dealer_hand_value = nil
 
-p player
+  deal_cards(playing_deck, player, dealer)
 
-p hand_value(player, full_deck_values)
+  loop do
+    player_hand_value = calculate_hand_value(player, full_deck_values)
+    display_player_hand(player, player_hand_value)
 
+    display_busted(player, player_hand_value) if busted?(player_hand_value)
+    break if busted?(player_hand_value)
 
-# display_player_hand(player)
+    answer = hit_or_stay
+    break if answer == 'stay'
 
+    hit(player, playing_deck)
+    player
+  end
+
+  break unless play_again?
+end
 # display_dealer_card(dealer)
 
 # player_hit_or_stay(player)
@@ -124,6 +196,3 @@ p hand_value(player, full_deck_values)
 # display_player_hand(player)
 
 # diaplay_dealer_hand(dealer)
-
-
-
