@@ -1,18 +1,5 @@
-require 'pry'
-
-# 1. Initialize deck
-
-# 2. Deal cards to player and dealer
-# 3. Player turn: hit or stay
-#   - repeat until bust or "stay"
-# 4. If player bust, dealer wins.
-# 5. Dealer turn: hit or stay
-#   - repeat until total >= 17
-# 6. If dealer bust, player wins.
-# 7. Compare cards and declare winner.
-
-SUITS = ['hearts', 'clubs', 'diamonds', 'spades']
-FACE_CARD_STRINGS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'jack', 'queen', 'king', 'ace']
+SUITS = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
+FACE_CARD_STRINGS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Jack', 'Queen', 'King', 'Ace']
 
 def array_of_cards(suits, face_card_string)
   all_cards = []
@@ -38,7 +25,7 @@ def assign_card_value(hash)
     if (2..9).include?(key[0].to_i)
       hash[key] = key[0].to_i
     elsif key[0..2] == 'ace'
-     hash[key] = [1, 11]
+      hash[key] = [1, 11]
     else
       hash[key] = 10
     end
@@ -95,19 +82,25 @@ def calculate_hand_value(cards, deck)
   total = 0
   cards.each { |card| total += deck[card] if card[0..2] != 'ace' }
   cards.each { |card| total += aces(total, card, deck) if card[0..2] == 'ace' }
+
   total
 end
 
 def display_player_hand(player_hand, value)
-  puts "Player has #{joinand(player_hand)} worth a total of #{value.to_s}."
+  puts "You have #{joinand(player_hand)} worth a total of #{value} points."
 end
 
-def dealer_visible_total(dealer_hand)
-
+def dealer_visible_hand(dealer_hand)
+  visible = dealer_hand[1..-1]
+  visible
 end
 
-def display_dealer_card(dealer_hand)
-  puts "Dealer has unknown card and #{joinand(dealer_visible_total(dealer_hand))} worth a total of "
+def display_visible_dealer_hand(visible_dealer_hand)
+  puts "Dealer has unknown card and #{joinand(visible_dealer_hand)}."
+end
+
+def display_full_dealer_hand(dealer_hand, value)
+   puts "Dealer has #{joinand(dealer_hand)} worth a total of #{value} points."
 end
 
 def hit_or_stay
@@ -132,12 +125,104 @@ def hit(player_hand, card_deck)
   player_hand << card_deck.pop
 end
 
+def display_new_card_player(hand)
+  puts "You drew #{hand.last}."
+end
+
+def display_new_card_dealer(hand)
+  puts "Dealer drew #{hand.last}."
+end
+
+def display_dealer_hit_or_stay(value)
+  if value < 17
+    puts "Dealer hits."
+  else
+    puts "Dealer stays."
+  end
+end
+
+def dealer_stay?(value)
+  true if value >= 17
+end
+
 def busted?(hand_value)
   true if hand_value > 21
 end
 
-def display_busted(player_hand, value)
-  puts "You busted! Computer wins!"
+def display_player_busted(value)
+  puts "You busted!"
+end
+
+def display_dealer_busted(value)
+  puts "Dealer busted!"
+end
+
+def player_turn(hand, deck_values, deck, dealer_visible_hand)
+  loop do
+    player_hand_value = calculate_hand_value(hand, deck_values)
+
+    display_player_hand(hand, player_hand_value)
+
+    display_player_busted(player_hand_value) if busted?(player_hand_value)
+
+    break if busted?(player_hand_value)
+
+    display_visible_dealer_hand(dealer_visible_hand)
+
+    answer = hit_or_stay
+
+    break if answer == 'stay'
+
+    hit(hand, deck)
+
+    display_new_card_player(hand)
+  end
+end
+
+def dealer_turn(dealer_hand, deck_values, deck, player_hand)
+  loop do
+    break if busted?(calculate_hand_value(player_hand, deck_values))
+
+    dealer_hand_value = calculate_hand_value(dealer_hand, deck_values)
+
+    display_full_dealer_hand(dealer_hand, dealer_hand_value)
+
+    display_dealer_busted(dealer_hand_value) if busted?(dealer_hand_value)
+
+    break if busted?(dealer_hand_value)
+
+    display_dealer_hit_or_stay(dealer_hand_value)
+
+    break if dealer_stay?(dealer_hand_value)
+
+    hit(dealer_hand, deck)
+
+    display_new_card_dealer(dealer_hand)
+  end
+end
+
+def display_totals(player_hand, dealer_hand, deck_values)
+  dealer_score = calculate_hand_value(dealer_hand, deck_values)
+  player_score = calculate_hand_value(player_hand, deck_values)
+
+  puts "Player has #{player_score} points. Dealer has #{dealer_score} points."
+end
+
+def declare_winner(player_hand, dealer_hand, deck_values)
+  dealer_score = calculate_hand_value(dealer_hand, deck_values)
+  player_score = calculate_hand_value(player_hand, deck_values)
+
+  if busted?(dealer_score)
+    puts "Player won!"
+  elsif busted?(player_score)
+    puts "Dealer won!"
+  elsif dealer_score > player_score
+    puts "Dealer won!"
+  elsif player_score > dealer_score
+    puts "Player won!"
+  else
+    puts "You tied!"
+  end
 end
 
 def play_again?
@@ -155,37 +240,26 @@ end
 
 # MAIN CODE
 
+puts "Welcome to 21!"
+full_deck_value = initialize_master_deck_values(SUITS, FACE_CARD_STRINGS)
+
 loop do
-
-  full_deck_values = initialize_master_deck_values(SUITS, FACE_CARD_STRINGS)
-
-  playing_deck = initialize_deck(full_deck_values)
+  deck = initialize_deck(full_deck_value)
 
   player = []
   dealer = []
-  player_hand_value = nil
-#  dealer_hand_value = nil
 
-  deal_cards(playing_deck, player, dealer)
+  deal_cards(deck, player, dealer)
 
-  loop do
-    player_hand_value = calculate_hand_value(player, full_deck_values)
-    display_player_hand(player, player_hand_value)
-    display_busted(player, player_hand_value) if busted?(player_hand_value)
-    break if busted?(player_hand_value)
+  dealer_visible = dealer_visible_hand(dealer)
 
-    answer = hit_or_stay
-    break if answer == 'stay'
+  player_turn(player, full_deck_value, deck, dealer_visible)
 
-    hit(player, playing_deck)
-  end
+  dealer_turn(dealer, full_deck_value, deck, player)
+
+  display_totals(player, dealer, full_deck_value)
+
+  declare_winner(player, dealer, full_deck_value)
 
   break unless play_again?
 end
-# display_dealer_card(dealer)
-
-# player_hit_or_stay(player)
-
-# display_player_hand(player)
-
-# diaplay_dealer_hand(dealer)
