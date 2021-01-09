@@ -1,6 +1,21 @@
 SUITS = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
 FACE_CARD_STRINGS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Jack', 'Queen', 'King', 'Ace']
 
+BUSTED = 21
+DEALER_HIT_MAX = 17
+
+def linebreak
+  puts ''
+  sleep(1)
+end
+
+def greeting
+  puts "Welcome to 21!"
+  linebreak
+  puts "Let's play!"
+  linebreak
+end
+
 def array_of_cards(suits, face_card_string)
   all_cards = []
   suits.each do |suit|
@@ -20,18 +35,16 @@ def card_values(cards)
   all_cards_with_values
 end
 
-def assign_card_value(hash)
-  hash.each_key do |key|
-    hash[key] = if (2..9).include?(key[0].to_i)
-                  key[0].to_i
-                elsif key[0..2] == 'ace'
-                  [1, 11]
-                else
-                  10
-                end
+def assign_card_value(cards)
+  cards.each_key do |card|
+    cards[card] = if (2..9).include?(card[0].to_i)
+                    card[0].to_i
+                  elsif card[0..2] == 'ace'
+                    [1, 11]
+                  else
+                    10
+                  end
   end
-
-  hash
 end
 
 def initialize_master_deck_values(suits, face_card_strings)
@@ -101,11 +114,13 @@ end
 
 def display_full_dealer_hand(dealer_hand, value)
   puts "Dealer has #{joinand(dealer_hand)} worth a total of #{value} points."
+  linebreak
 end
 
 def hit_or_stay
   answer = nil
   loop do
+    linebreak
     puts "Hit or stay?"
     answer = gets.chomp
     break if answer.downcase == "hit" || answer.downcase == "stay"
@@ -117,7 +132,7 @@ def hit_or_stay
   else
     puts "You chose to hit."
   end
-
+  linebreak
   answer
 end
 
@@ -127,45 +142,50 @@ end
 
 def display_new_card_player(hand)
   puts "You drew #{hand.last}."
+  linebreak
 end
 
 def display_new_card_dealer(hand)
   puts "Dealer drew #{hand.last}."
+  linebreak
 end
 
 def display_dealer_hit_or_stay(value)
-  if value < 17
+  if value < DEALER_HIT_MAX
     puts "Dealer hits."
   else
     puts "Dealer stays."
   end
+  linebreak
 end
 
 def dealer_stay?(value)
-  true if value >= 17
+  true if value >= DEALER_HIT_MAX
 end
 
 def busted?(hand_value)
-  true if hand_value > 21
+  true if hand_value > BUSTED
 end
 
 def display_player_busted
   puts "You busted!"
+  linebreak
 end
 
 def display_dealer_busted
   puts "Dealer busted!"
+  linebreak
 end
 
-def player_turn(hand, deck_values, deck, dealer_visible_hand)
+def player_turn(hand, deck_values, deck, dealer_visible_hand, score)
   loop do
-    player_hand_value = calculate_hand_value(hand, deck_values)
+    score[:player] = calculate_hand_value(hand, deck_values)
 
-    display_player_hand(hand, player_hand_value)
+    display_player_hand(hand, score[:player])
 
-    display_player_busted if busted?(player_hand_value)
+    display_player_busted if busted?(score[:player])
 
-    break if busted?(player_hand_value)
+    break if busted?(score[:player])
 
     display_visible_dealer_hand(dealer_visible_hand)
 
@@ -179,21 +199,21 @@ def player_turn(hand, deck_values, deck, dealer_visible_hand)
   end
 end
 
-def dealer_turn(dealer_hand, deck_values, deck, player_hand)
+def dealer_turn(dealer_hand, deck_values, deck, score)
   loop do
-    break if busted?(calculate_hand_value(player_hand, deck_values))
+    break if busted?(score[:player])
 
-    dealer_hand_value = calculate_hand_value(dealer_hand, deck_values)
+    score[:dealer] = calculate_hand_value(dealer_hand, deck_values)
 
-    display_full_dealer_hand(dealer_hand, dealer_hand_value)
+    display_full_dealer_hand(dealer_hand, score[:dealer])
 
-    display_dealer_busted if busted?(dealer_hand_value)
+    display_dealer_busted if busted?(score[:dealer])
 
-    break if busted?(dealer_hand_value)
+    break if busted?(score[:dealer])
 
-    display_dealer_hit_or_stay(dealer_hand_value)
+    display_dealer_hit_or_stay(score[:dealer])
 
-    break if dealer_stay?(dealer_hand_value)
+    break if dealer_stay?(score[:dealer])
 
     hit(dealer_hand, deck)
 
@@ -201,24 +221,20 @@ def dealer_turn(dealer_hand, deck_values, deck, player_hand)
   end
 end
 
-def display_totals(player_hand, dealer_hand, deck_values)
-  dealer_score = calculate_hand_value(dealer_hand, deck_values)
-  player_score = calculate_hand_value(player_hand, deck_values)
-
-  puts "Player has #{player_score} points. Dealer has #{dealer_score} points."
+def display_totals(score)
+  puts "Player has #{score[:player]} points."
+  puts "Dealer has #{score[:dealer]} points."
+  linebreak
 end
 
-def declare_winner(player_hand, dealer_hand, deck_values)
-  dealer_score = calculate_hand_value(dealer_hand, deck_values)
-  player_score = calculate_hand_value(player_hand, deck_values)
-
-  if busted?(dealer_score)
+def declare_winner(score)
+  if busted?(score[:dealer])
     puts "Player won!"
-  elsif busted?(player_score)
+  elsif busted?(score[:player])
     puts "Dealer won!"
-  elsif dealer_score > player_score
+  elsif score[:dealer] > score[:player]
     puts "Dealer won!"
-  elsif player_score > dealer_score
+  elsif score[:player] > score[:dealer]
     puts "Player won!"
   else
     puts "You tied!"
@@ -228,6 +244,7 @@ end
 def play_again?
   answer = ''
   loop do
+    linebreak
     puts "Play again? (y or n)"
     answer = gets.chomp.downcase
     break if answer == "yes" || answer == 'y'
@@ -240,7 +257,8 @@ end
 
 # MAIN CODE
 
-puts "Welcome to 21!"
+greeting
+
 full_deck_value = initialize_master_deck_values(SUITS, FACE_CARD_STRINGS)
 
 loop do
@@ -249,17 +267,21 @@ loop do
   player = []
   dealer = []
 
+  scoreboard = { player: 0, dealer: 0 }
+
   deal_cards(deck, player, dealer)
 
   dealer_visible = dealer_visible_hand(dealer)
 
-  player_turn(player, full_deck_value, deck, dealer_visible)
+  player_turn(player, full_deck_value, deck, dealer_visible, scoreboard)
 
-  dealer_turn(dealer, full_deck_value, deck, player)
+  dealer_turn(dealer, full_deck_value, deck, scoreboard)
 
-  display_totals(player, dealer, full_deck_value)
+  display_totals(scoreboard)
 
-  declare_winner(player, dealer, full_deck_value)
+  declare_winner(scoreboard)
 
   break unless play_again?
 end
+
+puts "Thanks for playing 21!"
