@@ -22,14 +22,15 @@ end
 
 def assign_card_value(hash)
   hash.each_key do |key|
-    if (2..9).include?(key[0].to_i)
-      hash[key] = key[0].to_i
-    elsif key[0..2] == 'ace'
-      hash[key] = [1, 11]
-    else
-      hash[key] = 10
-    end
+    hash[key] = if (2..9).include?(key[0].to_i)
+                  key[0].to_i
+                elsif key[0..2] == 'ace'
+                  [1, 11]
+                else
+                  10
+                end
   end
+
   hash
 end
 
@@ -67,13 +68,12 @@ def joinand(arr)
   string
 end
 
-def aces(current_hand_value, ace_card, deck_hash)
-  ace_value = nil
-  if current_hand_value > 10
-    ace_value = deck_hash[ace_card][0]
-  else
-    ace_value = deck_hash[ace_card][1]
-  end
+def aces(current_hand_value, ace_card, deck)
+  ace_value = if current_hand_value > 10
+                deck[ace_card][0]
+              else
+                deck[ace_card][1]
+              end
 
   ace_value
 end
@@ -100,7 +100,7 @@ def display_visible_dealer_hand(visible_dealer_hand)
 end
 
 def display_full_dealer_hand(dealer_hand, value)
-   puts "Dealer has #{joinand(dealer_hand)} worth a total of #{value} points."
+  puts "Dealer has #{joinand(dealer_hand)} worth a total of #{value} points."
 end
 
 def hit_or_stay
@@ -149,11 +149,11 @@ def busted?(hand_value)
   true if hand_value > 21
 end
 
-def display_player_busted(value)
+def display_player_busted
   puts "You busted!"
 end
 
-def display_dealer_busted(value)
+def display_dealer_busted
   puts "Dealer busted!"
 end
 
@@ -163,7 +163,7 @@ def player_turn(hand, deck_values, deck, dealer_visible_hand)
 
     display_player_hand(hand, player_hand_value)
 
-    display_player_busted(player_hand_value) if busted?(player_hand_value)
+    display_player_busted if busted?(player_hand_value)
 
     break if busted?(player_hand_value)
 
@@ -187,7 +187,7 @@ def dealer_turn(dealer_hand, deck_values, deck, player_hand)
 
     display_full_dealer_hand(dealer_hand, dealer_hand_value)
 
-    display_dealer_busted(dealer_hand_value) if busted?(dealer_hand_value)
+    display_dealer_busted if busted?(dealer_hand_value)
 
     break if busted?(dealer_hand_value)
 
