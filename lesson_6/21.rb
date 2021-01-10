@@ -1,5 +1,10 @@
 SUITS = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
+
+# rubocop:disable Layout/LineLength
+
 FACE_CARD_STRINGS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Jack', 'Queen', 'King', 'Ace']
+
+# rubocop:enable Layout/LineLength
 
 BUSTED = 21
 DEALER_HIT_MAX = 17
@@ -121,13 +126,13 @@ def hit_or_stay
   answer = nil
   loop do
     linebreak
-    puts "Hit or stay?"
-    answer = gets.chomp
-    break if answer.downcase == "hit" || answer.downcase == "stay"
-    puts "Invalid answer, please choose 'hit' or 'stay'."
+    puts "Hit or stay? (Type 'h' for hit and 's' for stay.)"
+    answer = gets.chomp.downcase
+    break if answer == "h" || answer == "s"
+    puts "Invalid answer, please choose 'h' for hit or 's' for stay."
   end
 
-  if answer == "stay"
+  if answer == "s"
     puts "You chose to stay."
   else
     puts "You chose to hit."
@@ -160,11 +165,11 @@ def display_dealer_hit_or_stay(value)
 end
 
 def dealer_stay?(value)
-  true if value >= DEALER_HIT_MAX
+  value >= DEALER_HIT_MAX
 end
 
 def busted?(hand_value)
-  true if hand_value > BUSTED
+  hand_value > BUSTED
 end
 
 def display_player_busted
@@ -191,7 +196,7 @@ def player_turn(hand, deck_values, deck, dealer_visible_hand, score)
 
     answer = hit_or_stay
 
-    break if answer == 'stay'
+    break if answer == 's'
 
     hit(hand, deck)
 
@@ -227,17 +232,25 @@ def display_totals(score)
   linebreak
 end
 
+def determine_winner(score)
+  winner = if busted?(score[:dealer]) || score[:player] > score[:dealer]
+             'player'
+           elsif busted?(score[:player]) || score[:dealer] > score[:player]
+             'dealer'
+           else
+             'tie'
+           end
+
+  winner
+end
+
 def declare_winner(score)
-  if busted?(score[:dealer])
+  if determine_winner(score) == 'player'
     puts "Player won!"
-  elsif busted?(score[:player])
+  elsif determine_winner(score) == 'dealer'
     puts "Dealer won!"
-  elsif score[:dealer] > score[:player]
-    puts "Dealer won!"
-  elsif score[:player] > score[:dealer]
-    puts "Player won!"
-  else
-    puts "You tied!"
+  elsif determine_winner(score) == 'tie'
+    puts "It's a tie!"
   end
 end
 
@@ -282,6 +295,8 @@ loop do
   declare_winner(scoreboard)
 
   break unless play_again?
+
+  system 'clear'
 end
 
-puts "Thanks for playing 21!"
+puts "Thanks for playing 21! Goodbye!"
