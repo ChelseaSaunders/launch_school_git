@@ -244,12 +244,12 @@ def determine_winner(score)
   winner
 end
 
-def declare_winner(score)
-  if determine_winner(score) == 'player'
+def declare_winner(game_winner)
+  if game_winner == 'player'
     puts "Player won!"
-  elsif determine_winner(score) == 'dealer'
+  elsif game_winner == 'dealer'
     puts "Dealer won!"
-  elsif determine_winner(score) == 'tie'
+  elsif game_winner == 'tie'
     puts "It's a tie!"
   end
 end
@@ -292,7 +292,9 @@ loop do
 
   display_totals(scoreboard)
 
-  declare_winner(scoreboard)
+  winner = determine_winner(scoreboard)
+
+  declare_winner(winner)
 
   break unless play_again?
 
