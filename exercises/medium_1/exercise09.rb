@@ -29,7 +29,19 @@
 # ALOGORITHM:
 
 # CODE:
+def fibonacci(num)
+  array = [1, 1]
+  counter = 1
 
-fibonacci(20) == 6765
-fibonacci(100) == 354224848179261915075
-fibonacci(100_001) # => 4202692702.....8285979669707537501
+  loop do
+    array << (array[counter] + array[counter - 1])
+    counter += 1
+    break if array.length == num
+  end
+
+  array.last
+end
+
+p fibonacci(20)  == 6765
+p fibonacci(100)  == 354224848179261915075
+# p fibonacci(100_001)  => 4202692702.....8285979669707537501
