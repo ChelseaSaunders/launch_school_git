@@ -13,8 +13,8 @@
 # spelled from this set of blocks, false otherwise.
 
 # PROBLEM:
-#   Input:
-#   Output:
+#   Input: string word
+#   Output: boolean true or false
 #   Rules:
 #     Explicit:
 #     Implicit:
@@ -27,6 +27,26 @@
 
 # CODE:
 
-block_word?('BATCH') == true
-block_word?('BUTCH') == false
-block_word?('jest') == true
+BLOCKS = [["B", "O"], ["X", "K"], ["D", "Q"], ["C", "P"], ["N", "A"],
+          ["G", "T"], ["R", "E"], ["F", "S"], ["J", "W"], ["H", "U"],
+          ["V", "I"], ["L", "Y"], ["Z", "M"]]
+
+def block_word?(word)
+  chars = word.upcase.split('')
+  BLOCKS.each do |letters|
+    if chars.include?(letters[0]) && chars.include?(letters[1])
+      return false
+    elsif (chars.count(letters[0]) + chars.count(letters[1])) >= 2
+      return false
+    else
+      next
+    end
+  end
+
+  true
+end
+
+p block_word?('BATCH') == true
+p block_word?('BAATCH') == false
+p block_word?('BUTCH') == false
+p block_word?('jest') == true
