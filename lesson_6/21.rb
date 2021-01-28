@@ -233,9 +233,13 @@ def display_totals(score)
 end
 
 def determine_winner(score)
-  winner = if busted?(score[:dealer]) || score[:player] > score[:dealer]
+  winner = if busted?(score[:dealer]) 
              'player'
-           elsif busted?(score[:player]) || score[:dealer] > score[:player]
+           elsif busted?(score[:player]) 
+             'dealer'
+           elsif score[:player] > score[:dealer]
+             'player'
+           elsif score[:dealer] > score[:player]
              'dealer'
            else
              'tie'
