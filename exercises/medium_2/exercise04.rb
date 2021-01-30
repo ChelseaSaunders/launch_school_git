@@ -19,29 +19,28 @@
 
 # ALOGORITHM:
 # - create method, balanced? which takes one string as an argument
-# - test whether "(" and ")" occur equal times; return false if not 
+# - test whether "(" and ")" occur equal times; return false if not
 # - test whether each "(" is followed by a ')' somewhere in code
 
 # CODE:
 
 def balanced?(string)
-  return false if string.count('(') != string.count(')')
-  
-  counter = 0
-  loop do string.length.times 
-    if string[counter] != '('
-      counter += 1
-    else
-      reverse_counter = string.length - 1
-      loop do 
-        if string[reverse counter] == 
+  parentheses = 0
+
+  string.each_char do |char|
+    return false if parentheses < 0
+    parentheses += 1 if char == "("
+    parentheses -= 1 if char == ")"
+  end
+
+  parentheses == 0
 end
 
-balanced?('What (is) this?') == true
-balanced?('What is) this?') == false
-balanced?('What (is this?') == false
-balanced?('((What) (is this))?') == true
-balanced?('((What)) (is this))?') == false
-balanced?('Hey!') == true
-balanced?(')Hey!(') == false
-balanced?('What ((is))) up(') == false
+p balanced?('What (is) this?') == true
+p balanced?('What is) this?') == false
+p balanced?('What (is this?') == false
+p balanced?('((What) (is this))?') == true
+p balanced?('((What)) (is this))?') == false
+p balanced?('Hey!') == true
+p balanced?(')Hey!(') == false
+p balanced?('What ((is))) up(') == false
