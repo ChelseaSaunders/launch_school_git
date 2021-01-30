@@ -44,11 +44,12 @@
 # assume that the Array contains at least 2 elements.
 
 # PROBLEM:
-#   Input:
-#   Output:
+#   Input: array (at least 2 elements)
+#   Output: SAME mutated array with with lowest value first increasing ot
+#           highest value last
 #   Rules:
 #     Explicit:
-#     Implicit:
+#     Implicit: elements are all same type?  no duplicate elements?
 
 # EXAMPLES/TEST CASES:
 
@@ -56,16 +57,49 @@
 
 # ALOGORITHM:
 
+- create method bubble_sort! that takes one array with at least two elements
+  as argument
+- create a loop that
+- array each with index
+
 # CODE:
 
+def bubble_sort!(array)
+  unt
+    array.each_with_index do |element, index|
+      break if index + 1 == array.length
+      if (element <=> array[index + 1]) > 0
+        element1 = array[index].clone
+        element2 = array[index + 1].clone
+        array[index] = element2
+        array[index + 1] = element1
+      else
+        next
+      end
+    end
+  ##
+    end
+
+    counter = 0
+    array.length.times do
+
+
+    array
+  end
+
+  p array
+
+
+  array
+end
 array = [5, 3]
 bubble_sort!(array)
-array == [3, 5]
+p array == [3, 5]
 
 array = [6, 2, 7, 1, 4]
 bubble_sort!(array)
-array == [1, 2, 4, 6, 7]
+p array == [1, 2, 4, 6, 7]
 
 array = %w(Sue Pete Alice Tyler Rachel Kim Bonnie)
 bubble_sort!(array)
-array == %w(Alice Bonnie Kim Pete Rachel Sue Tyler)
+p array == %w(Alice Bonnie Kim Pete Rachel Sue Tyler)

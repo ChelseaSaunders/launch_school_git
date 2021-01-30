@@ -14,22 +14,59 @@
 # or invalid.
 
 # PROBLEM:
-#   Input:
-#   Output:
+#   Input: three numbers
+#   Output: symbol (:equilateral, :isosceles, :scalene, or :invalid)
 #   Rules:
 #     Explicit:
+#       - If input <= 0, return :invalid
+#       - If two shortest sides added together <= longest side, return
+#         :invalid
+#       - If all input integers are the same return :equilateral
+#       - If 2 input integers are the same and one is differet, return
+#         :isosceles
+#       - If all three input integers are different, return :scalene
 #     Implicit:
 
 # EXAMPLES/TEST CASES:
 
 # DATA:
+# Input is number, could be integer or float, output is symbol.
 
 # ALOGORITHM:
+# - create method _triangle_ that takes 3 numbers as arguments
+# - create array with each argument as an element; sort array so lowest
+#   valyes are first elements
+# - determine if first element in array (shortest length) is <= 0 and
+#   return invalid if it is
+# - determine the sum of the first two elements in the array; if the sum
+#   is <= the last element in the array, return invalid
+# - determine if all 3 sides are equal, if so return :equliateral
+# - determine if only 2 sides are equal, if so return :iscoles
+# - determine if none of the 3 sides are equal, if so, return :scalene
 
 # CODE:
 
-triangle(3, 3, 3) == :equilateral
-triangle(3, 3, 1.5) == :isosceles
-triangle(3, 4, 5) == :scalene
-triangle(0, 3, 3) == :invalid
-triangle(3, 1, 1) == :invalid
+# rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+def triangle(num1, num2, num3)
+  num_array = [num1, num2, num3].sort
+
+  return :invalid if num_array[0] <= 0
+
+  return :invalid if num_array[0] + num_array[1] <= num_array[2]
+
+  if num1 == num2 && num2 == num3
+    :equilateral
+  elsif num1 == num2 || num2 == num3 || num3 == num1
+    :isosceles
+  else
+    :scalene
+  end
+end
+
+p triangle(3, 3, 3) == :equilateral
+p triangle(3, 3, 1.5) == :isosceles
+p triangle(3, 4, 5) == :scalene
+p triangle(0, 3, 3) == :invalid
+p triangle(3, 1, 1) == :invalid
+
+# rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

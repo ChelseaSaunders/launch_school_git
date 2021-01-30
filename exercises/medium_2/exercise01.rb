@@ -22,11 +22,15 @@
 
 # CODE:
 
+# rubocop: disable Layout/LineLength
+
 def longest_sentence(text_file)
   array = File.read(text_file).split(/\.|\?|!/)
   array.map! { |sentence| sentence.split(' ') }
   array.sort_by!(&:length)
   puts "The longest sentence is #{array.last.join(' ')}. It is #{array.last.length} words long."
 end
+
+# rubocop: enable Layout/LineLength
 
 longest_sentence("pg84.txt")
