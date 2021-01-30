@@ -57,40 +57,27 @@
 
 # ALOGORITHM:
 
-- create method bubble_sort! that takes one array with at least two elements
-  as argument
-- create a loop that
-- array each with index
+# - create method bubble_sort! that takes one array with at least two elements
+#   as argument
+# - create a loop that
+# - array each with index
 
 # CODE:
 
 def bubble_sort!(array)
-  unt
+  loop do
+    sorted = false
     array.each_with_index do |element, index|
       break if index + 1 == array.length
-      if (element <=> array[index + 1]) > 0
-        element1 = array[index].clone
-        element2 = array[index + 1].clone
-        array[index] = element2
-        array[index + 1] = element1
-      else
-        next
-      end
-    end
-  ##
+      next if element <= array[index + 1]
+      array[index], array[index + 1] = array[index + 1], array[index]
+      sorted = true
     end
 
-    counter = 0
-    array.length.times do
-
-
-    array
+    break unless sorted
   end
 
-  p array
-
-
-  array
+  nil
 end
 array = [5, 3]
 bubble_sort!(array)
