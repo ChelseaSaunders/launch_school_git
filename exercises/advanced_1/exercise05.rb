@@ -48,8 +48,24 @@
 # DATA:
 
 # ALOGORITHM:
-
+# - create method rotate90 that takes one matrix array as an argument
+# - create a new empty array new_array
+# - push as many sub-arrays as the length of the input array's first
+#   subarray into new_array (e.g if input array[0].size == 2, put two
+#   empty subarras into new_array)
+# - iterate through input array.  beginning with
 # CODE:
+
+def rotate90(array)
+  new_array = []
+  array[0].length.times { new_array << [] }
+
+  array.each do |subarr|
+    subarr.each_with_index { |num, index| new_array[index].prepend(num) }
+  end
+
+  new_array
+end
 
 matrix1 = [
   [1, 5, 8],

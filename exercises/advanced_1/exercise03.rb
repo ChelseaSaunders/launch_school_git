@@ -51,6 +51,15 @@ matrix = [
   [3, 9, 6]
 ]
 
+def transpose(array)
+  new_array = [[], [], []]
+  array.each do |subarr|
+    subarr.each_with_index { |num, index| new_array[index] << num }
+  end
+
+  new_array
+end
+
 new_matrix = transpose(matrix)
 
 p new_matrix == [[1, 4, 3], [5, 7, 9], [8, 2, 6]]
